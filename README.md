@@ -16,7 +16,7 @@ To create the first docker container with the master node run:
 
     docker run -d -P --name pgrepl1  postgres_repl 
 
-To add a standby to teh master, pgrepl1, run:
+To add a standby to the master, pgrepl1, run:
 
     docker run -d --link pgrepl1:postgres -P --name pgrepl2 -e PGREPL_ROLE=STANDBY  postgres_repl
 
