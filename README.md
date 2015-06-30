@@ -82,6 +82,16 @@ Check the logs to see if has promoted successfully:
         
 
 This would promte pgrepl2 to be the master. The downstream standby from pgrepl2, pgrepl4 will switch timelines and continue to be the downstream standby. 
+Checking the logs for pgrepl4 will show that:
+
+    # docker logs pgrepl4
+    LOG:  replication terminated by primary server
+    DETAIL:  End of WAL reached on timeline 1 at 0/5000060.
+    LOG:  fetching timeline history file for timeline 2 from primary server
+    LOG:  new target timeline is 2
+    LOG:  record with zero length at 0/5000060
+    LOG:  restarted WAL streaming at 0/5000000 on timeline 2
+
 pgrepl3 would in this case not have any master to connect to. You could reconfigure it to follow pgrepl2, or just remove it and create a new standby, downstream from pgrepl2.
 
 When Docker Swarm gets some more love, and support networking between the swarm nodes when using --link, you could easily make sure your master and standby's each end up on different nodes, by using affinity:container!=upstream_node
