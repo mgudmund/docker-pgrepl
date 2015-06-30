@@ -16,10 +16,31 @@ To create the first docker container with the master node run:
 
     docker run -d -P --name pgrepl1  postgres_repl 
 
+Check the logs to see if postgres started correctly:
+
+    docker logs pgrepl1
+    ...
+    LOG:  database system was shut down at 2015-06-30 08:14:39 UTC
+    LOG:  MultiXact member wraparound protections are now enabled
+    LOG:  database system is ready to accept connections
+    LOG:  autovacuum launcher started
+    
+
 To add a standby to the master, pgrepl1, run:
 
     docker run -d --link pgrepl1:postgres -P --name pgrepl2 -e PGREPL_ROLE=STANDBY  postgres_repl
 
+Check the logs to make sure it has entered standby mode:
+
+    docker logs pgrepl2 
+    LOG:  database system was interrupted while in recovery at log time 2015-06-30 08:15:14 UTC
+    HINT:  If this has occurred more than once some data might be corrupted and you might need to choose an earlier recovery target.
+    LOG:  entering standby mode
+    LOG:  started streaming WAL from primary at 0/4000000 on timeline 1
+    LOG:  redo starts at 0/4000060
+    LOG:  consistent recovery state reached at 0/5000000
+    LOG:  database system is ready to accept read only connections
+    
 To add a second standby to the master,pgrepl1, run:
 
     docker run -d --link pgrepl1:postgres -P --name pgrepl3 -e PGREPL_ROLE=STANDBY  postgres_repl
@@ -42,6 +63,22 @@ To promote a standby to become a master, you can use docker exec. Example:
 If pgrepl1 crashes, run the following command to promote pgrepl2 to become the master
   
     docker exec pgrepl2 gosu postgres pg_ctl promote
+    server promoting
+
+Check the logs to see if has promoted successfully:
+
+    docker logs pgrepl2
+    ...
+    LOG:  received promote request
+    FATAL:  terminating walreceiver process due to administrator command
+    LOG:  record with zero length at 0/5000060
+    LOG:  redo done at 0/5000028
+    LOG:  selected new timeline ID: 2
+    LOG:  archive recovery complete
+    LOG:  MultiXact member wraparound protections are now enabled
+    LOG:  database system is ready to accept connections
+    LOG:  autovacuum launcher started
+        
 
 This would promte pgrepl2 to be the master. The downstream standby from pgrepl2, pgrepl4 will switch timelines and continue to be the downstream standby. 
 pgrepl3 would in this case not have any master to connect to. You could reconfigure it to follow pgrepl2, or just remove it and create a new standby, downstream from pgrepl2.
