@@ -42,7 +42,7 @@ Check the logs to make sure it has entered standby mode:
     LOG:  consistent recovery state reached at 0/5000000
     LOG:  database system is ready to accept read only connections
     
-To add a second standby to the master,pgrepl1, run:
+To add a second standby to the master, pgrepl1, run:
 
     # docker run -d --link pgrepl1:postgres -P --name pgrepl3 -e PGREPL_ROLE=STANDBY  postgres_repl
 
