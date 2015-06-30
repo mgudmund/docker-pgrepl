@@ -26,10 +26,10 @@ To add a third standby, downstream of the first standby, pgrepl2, run:
 
 The --link directive specifies what upstream postgres node to connect the standby to. 
 After the above commands have been run, you should have a Postgres streaming replica setup like this:
-
+<pre>
 pgrepl1 --> pgrepl2 --> pgrepl4
         --> pgrepl3
-
+</pre>
 To promote a standby to become a master, you can use docker exec. Example:
 
 If pgrepl1 crashes, run the following command to promote pgrepl2 to become the master
