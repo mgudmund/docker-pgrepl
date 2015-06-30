@@ -6,7 +6,7 @@ This is a PoC, and is not intended to be used for production scenarios.
 
 To clone this git repo run:
 
-    git clone https://github.com/mgudmund/docker-pgrepl.git
+    # git clone https://github.com/mgudmund/docker-pgrepl.git
 
 To build the docker image do:
 
