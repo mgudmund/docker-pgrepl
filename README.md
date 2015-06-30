@@ -10,15 +10,15 @@ To clone this git repo run:
 
 To build the docker image do:
 
-    docker build -t postgres_repl .
+    # docker build -t postgres_repl .
 
 To create the first docker container with the master node run:
 
-    docker run -d -P --name pgrepl1  postgres_repl 
+    # docker run -d -P --name pgrepl1  postgres_repl 
 
 Check the logs to see if postgres started correctly:
 
-    docker logs pgrepl1
+    # docker logs pgrepl1
     ...
     LOG:  database system was shut down at 2015-06-30 08:14:39 UTC
     LOG:  MultiXact member wraparound protections are now enabled
@@ -28,11 +28,12 @@ Check the logs to see if postgres started correctly:
 
 To add a standby to the master, pgrepl1, run:
 
-    docker run -d --link pgrepl1:postgres -P --name pgrepl2 -e PGREPL_ROLE=STANDBY  postgres_repl
+    # docker run -d --link pgrepl1:postgres -P --name pgrepl2 -e PGREPL_ROLE=STANDBY  postgres_repl
 
 Check the logs to make sure it has entered standby mode:
 
-    docker logs pgrepl2 
+    # docker logs pgrepl2 
+    ...
     LOG:  database system was interrupted while in recovery at log time 2015-06-30 08:15:14 UTC
     HINT:  If this has occurred more than once some data might be corrupted and you might need to choose an earlier recovery target.
     LOG:  entering standby mode
@@ -43,11 +44,11 @@ Check the logs to make sure it has entered standby mode:
     
 To add a second standby to the master,pgrepl1, run:
 
-    docker run -d --link pgrepl1:postgres -P --name pgrepl3 -e PGREPL_ROLE=STANDBY  postgres_repl
+    # docker run -d --link pgrepl1:postgres -P --name pgrepl3 -e PGREPL_ROLE=STANDBY  postgres_repl
 
 To add a third standby, downstream of the first standby, pgrepl2, run:
 
-    docker run -d --link pgrepl2:postgres -P --name pgrepl4 -e PGREPL_ROLE=STANDBY  postgres_repl
+    # docker run -d --link pgrepl2:postgres -P --name pgrepl4 -e PGREPL_ROLE=STANDBY  postgres_repl
 
 The --link directive specifies what upstream postgres node to connect the standby to. 
 After the above commands have been run, you should have a Postgres streaming replica setup like this:
@@ -62,12 +63,12 @@ To promote a standby to become a master, you can use docker exec. Example:
 
 If pgrepl1 crashes, run the following command to promote pgrepl2 to become the master
   
-    docker exec pgrepl2 gosu postgres pg_ctl promote
+    # docker exec pgrepl2 gosu postgres pg_ctl promote
     server promoting
 
 Check the logs to see if has promoted successfully:
 
-    docker logs pgrepl2
+    # docker logs pgrepl2
     ...
     LOG:  received promote request
     FATAL:  terminating walreceiver process due to administrator command
