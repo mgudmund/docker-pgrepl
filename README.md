@@ -28,8 +28,7 @@ The --link directive specifies what upstream postgres node to connect the standb
 After the above commands have been run, you should have a Postgres streaming replica setup like this:
 
 pgrepl1 --> pgrepl2 --> pgrepl4
-         |
-         |--> pgrepl3
+        --> pgrepl3
 
 To promote a standby to become a master, you can use docker exec. Example:
 
