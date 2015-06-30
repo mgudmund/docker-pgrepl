@@ -3,7 +3,7 @@
 This Dockerfile uses the standard postgres 9.4 docker image and adds a script that sets up streaming repliaction between two or more docker containers runningPostgres.
 
 This is a PoC, and is not intended to be used for production scenarios. 
-
+---
 To clone this git repo run:
 
     # git clone https://github.com/mgudmund/docker-pgrepl.git
@@ -95,7 +95,7 @@ Checking the logs for pgrepl4 will show that:
 pgrepl3 would in this case not have any master to connect to. You could reconfigure it to follow pgrepl2, or just remove it and create a new standby, downstream from pgrepl2.
 
 When Docker Swarm gets some more love, and support networking between the swarm nodes when using --link, you could easily make sure your master and standby's each end up on different nodes, by using affinity:container!=upstream_node
-
+---
 There are some improvements to be made to this image. 
  
  1. Add support for specifying master node as environment variables instead of relying on --link.
@@ -103,6 +103,7 @@ There are some improvements to be made to this image.
  3. Add tool for automatic failover, like repmgr.
 
 The image supports all feautures on the official postgres image, so setting postgres password etc, works, but not done in the above examples.
+
 Replication connection uses a user called pgrepl, and needs a password that is, for now, genereated based on a token. There is a default token, but you can specify your own using environment variables on docker run. I.e. -e PGREPL_TOKEN=thisismytoken
 
 
