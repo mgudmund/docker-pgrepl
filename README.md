@@ -4,6 +4,10 @@ This Dockerfile uses the standard postgres 9.4 docker image and adds a script th
 
 This is a PoC, and is not intended to be used for production scenarios. 
 
+To clone this git repo run:
+
+    git clone https://github.com/mgudmund/docker-pgrepl.git
+
 To build the docker image do:
 
     docker build -t postgres_repl .
