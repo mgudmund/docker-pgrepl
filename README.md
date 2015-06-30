@@ -106,7 +106,7 @@ There are some improvements to be made to this image.
  2. Add support for wal archiving
  3. Add tool for automatic failover, like repmgr.
 
-The image supports all feautures on the official postgres image, so setting postgres password etc, works, but not done in the above examples.
+The image supports all feautures of the official postgres image, so setting postgres password etc, works, but not done in the above examples.
 
 Replication connection uses a user called pgrepl, and needs a password that is, for now, genereated based on a token. There is a default token, but you can specify your own using environment variables on docker run. I.e. -e PGREPL_TOKEN=thisismytoken
 
