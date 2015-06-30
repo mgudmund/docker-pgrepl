@@ -27,7 +27,7 @@ To add a third standby, downstream of the first standby, pgrepl2, run:
 The --link directive specifies what upstream postgres node to connect the standby to. 
 After the above commands have been run, you should have a Postgres streaming replica setup like this:
 
- pgrepl1 --> pgrepl2 --> pgrepl4
+pgrepl1 --> pgrepl2 --> pgrepl4
          |
          |--> pgrepl3
 
@@ -40,7 +40,8 @@ If pgrepl1 crashes, run the following command to promote pgrepl2 to become the m
 This would promte pgrepl2 to be the master. The downstream standby from pgrepl2, pgrepl4 will switch timelines and continue to be the downstream standby. 
 pgrepl3 would in this case not have any master to connect to. You could reconfigure it to follow pgrepl2, or just remove it and create a new standby, downstream from pgrepl2.
 
-When Dcoker Swarm gets some more love, and support networking between the swarm nodes when using --link, you could easily make sure your master and standby's each end up on different nodes, by using affinity:container!=<upstream master name>
+When Docker Swarm gets some more love, and support networking between the swarm nodes when using --link, you could easily make sure your master and standby's each end up on different nodes, by using affinity:container!=upstream_node
+
 
 
 
