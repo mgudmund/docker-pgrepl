@@ -96,15 +96,17 @@ Checking the logs for pgrepl4 will show that:
 
 pgrepl3 would in this case not have any master to connect to. You could reconfigure it to follow pgrepl2, or just remove it and create a new standby, downstream from pgrepl2.
 
+If you don't want to use the docker --link, you can specify the IP and port of the replication master using PGREPL_MASTER_IP and PGREPL_MASTER_PORT as environment variables in your docker run command.
+
 When Docker Swarm gets some more love, and support networking between the swarm nodes when using --link, you could easily make sure your master and standby's each end up on different nodes, by using affinity:container!=upstream_node
+
 
 ---
 
 There are some improvements to be made to this image. 
  
- 1. Add support for specifying master node as environment variables instead of relying on --link.
- 2. Add support for wal archiving
- 3. Add tool for automatic failover, like repmgr.
+ 1. Add support for wal archiving
+ 2. Add tool for automatic failover, like repmgr.
 
 The image supports all feautures of the official postgres image, so setting postgres password etc, works, but not done in the above examples.
 
