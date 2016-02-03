@@ -34,7 +34,7 @@ if [ -n "$PGREPL_ROLE" ]; then
       rm -rf /var/lib/postgresql/data/*
       gosu postgres pg_basebackup -D /var/lib/postgresql/data/ -h "$PGREPL_MASTER_IP" -p "$PGREPL_MASTER_PORT" -U pgrepl -P 
       gosu postgres echo "standby_mode='on'" >> /var/lib/postgresql/data/recovery.conf
-      gosu postgres echo "primary_conninfo='host=$POSTGRES_PORT_5432_TCP_ADDR port=$POSTGRES_PORT_5432_TCP_PORT user=pgrepl'" >> /var/lib/postgresql/data/recovery.conf
+      gosu postgres echo "primary_conninfo='host=$PGREPL_MASTER_IP port=$PGREPL_MASTER_PORT user=pgrepl'" >> /var/lib/postgresql/data/recovery.conf
       gosu postgres echo "recovery_target_timeline = 'latest'" >> /var/lib/postgresql/data/recovery.conf
    fi
 fi  
