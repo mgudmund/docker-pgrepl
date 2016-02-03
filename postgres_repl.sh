@@ -18,13 +18,19 @@ echo "host  replication     pgrepl     0.0.0.0/0         md5" >> /var/lib/postgr
 if [ -n "$PGREPL_ROLE" ]; then
    echo "PGREPL_ROLE set to $PGREPL_ROLE"
    if [ "$PGREPL_ROLE" == "STANDBY" ]; then
+      if [ -z "$PGREPL_MASTER_IP" ]; then
+          PGREPL_MASTER_IP=$POSTGRES_PORT_5432_TCP_ADDR
+      fi
+      if [ -z "$PGREPL_MASTER_PORT" ]; then
+          PGREPL_MASTER_PORT=$POSTGRES_PORT_5432_TCP_PORT
+      fi
       mkdir -p /home/postgres
       chown -R postgres:postgres /home/postgres
       su -  postgres -c "echo '*:*:*:pgrepl:$PGREPL_TOKEN_HASH' > /home/postgres/.pgpass" 
       chown postgres:postgres /home/postgres/.pgpass
       chmod 0600 /home/postgres/.pgpass
       rm -rf /var/lib/postgresql/data/*
-      gosu postgres pg_basebackup -D /var/lib/postgresql/data/ -h "$POSTGRES_PORT_5432_TCP_ADDR" -p "$POSTGRES_PORT_5432_TCP_PORT" -U pgrepl -P 
+      gosu postgres pg_basebackup -D /var/lib/postgresql/data/ -h "$PGREPL_MASTER_IP" -p "$PGREPL_MASTER_PORT" -U pgrepl -P 
       gosu postgres echo "standby_mode='on'" >> /var/lib/postgresql/data/recovery.conf
       gosu postgres echo "primary_conninfo='host=$POSTGRES_PORT_5432_TCP_ADDR port=$POSTGRES_PORT_5432_TCP_PORT user=pgrepl'" >> /var/lib/postgresql/data/recovery.conf
       gosu postgres echo "recovery_target_timeline = 'latest'" >> /var/lib/postgresql/data/recovery.conf
