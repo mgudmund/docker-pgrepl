@@ -4,6 +4,8 @@
 PGREPL_TOKEN=abc123
 PGREPL_TOKEN_HASH=$(echo $PGREPL_TOKEN | md5sum | awk '{print $1}')
 
+gosu postgres pg_ctl stop
+
 echo "******Setting postgres system variables for replication******"
 gosu postgres postgres --single <<- EOSQL
    ALTER SYSTEM SET wal_level=hot_standby;
@@ -37,4 +39,4 @@ if [ -n "$PGREPL_ROLE" ]; then
    fi
 fi  
  
-
+gosu postgres pg_ctl start
