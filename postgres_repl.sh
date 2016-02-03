@@ -40,3 +40,4 @@ if [ -n "$PGREPL_ROLE" ]; then
 fi  
  
 gosu postgres pg_ctl start
+sleep 10
