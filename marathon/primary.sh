@@ -3,7 +3,7 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-set -o xtrace
+#set -o xtrace
 
 if [[ $# -lt 1 ]]; then 
   echo usage: $0 [marathon-url] [primary-app-id] [primary-vip]
@@ -20,7 +20,7 @@ read -r -d '' PAYLOAD <<EOM || true
     "POSTGRES_USER": "${POSTGRES_USER-gestaltdev}",
     "POSTGRES_PASSWORD": "${POSTGRES_PASSWORD-letmein}",
     "PGDATA": "/mnt/mesos/sandbox/pgdata",
-    "PGREPL_TOKEN": "${PGREPL_TOKEN-abc123}",
+    "PGREPL_TOKEN": "${PGREPL_TOKEN-wannab3justl1k3u}",
     "PGREPL_ROLE": "PRIMARY"
   },
   "instances": 1,
@@ -53,16 +53,17 @@ read -r -d '' PAYLOAD <<EOM || true
       ]
     }
   },
-  "taskKillGracePeriodSeconds": 30,
-  "healthChecks": [
-    {
-      "protocol": "COMMAND",
-      "command": {
-        "value": "gosu postgres pg_ctl status"
-      }
-    }
-  ]
+  "taskKillGracePeriodSeconds": 30
 }
 EOM
+
+#  "healthChecks": [
+#    {
+#      "protocol": "COMMAND",
+#      "command": {
+#        "value": "gosu postgres pg_ctl status"
+#      }
+#    }
+#  ]
 
 echo $PAYLOAD | http PUT $MARURL/v2/apps/$APPID?force=true

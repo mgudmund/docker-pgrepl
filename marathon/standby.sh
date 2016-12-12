@@ -13,11 +13,13 @@ fi
 MARURL="$1"
 PRIMARY_APPID=${2}
 APPID=${3-/gestalt-data/pg2}
-VIP=${4-/primary.gestalt-data:5432}
+VIP=${4-/standby.gestalt-data:5432}
 
 PVIP=$(http $MARURL/v2/apps/$PRIMARY_APPID | jq -r '.app.container.docker.portMappings[0].labels.VIP_0' | sed "s|^/||")
 PRIMARY_HOST="${PVIP%:*}.marathon.l4lb.thisdcos.directory"
 PRIMARY_PORT="${PVIP#*:}"
+
+PHOST=$(http $MARURL/v2/apps/$PRIMARY_APPID | jq -r '.app.tasks[0].host')
 echo Primary VIP is $PRIMARY_HOST:$PRIMARY_PORT
 
 read -r -d '' PAYLOAD <<EOM || true
@@ -26,7 +28,7 @@ read -r -d '' PAYLOAD <<EOM || true
     "POSTGRES_USER": "${POSTGRES_USER-gestaltdev}",
     "POSTGRES_PASSWORD": "${POSTGRES_PASSWORD-letmein}",
     "PGDATA": "/mnt/mesos/sandbox/pgdata",
-    "PGREPL_TOKEN": "${PGREPL_TOKEN-abc123}",
+    "PGREPL_TOKEN": "${PGREPL_TOKEN-wannab3justl1k3u}",
     "PGREPL_ROLE": "STANDBY",
     "PGREPL_MASTER_IP": "$PRIMARY_HOST",
     "PGREPL_MASTER_PORT": "$PRIMARY_PORT"
@@ -62,15 +64,17 @@ read -r -d '' PAYLOAD <<EOM || true
     }
   },
   "taskKillGracePeriodSeconds": 30,
-  "healthChecks": [
-    {
-      "protocol": "COMMAND",
-      "command": {
-        "value": "gosu postgres pg_ctl status"
-      }
-    }
-  ]
+  "constraints": [ [ "hostname", "UNLIKE", "$PHOST" ] ]
 }
 EOM
+
+#  "healthChecks": [
+#    {
+#      "protocol": "COMMAND",
+#      "command": {
+#        "value": "gosu postgres pg_ctl status"
+#      }
+#    }
+#  ]
 
 echo $PAYLOAD | http PUT $MARURL/v2/apps/$APPID?force=true

@@ -25,6 +25,12 @@ file_env() {
 	unset "$fileVar"
 }
 
+cat <<-EOE
+current time: $(date)
+running $0 with environment:
+$(env)
+EOE
+
 if [ "${1:0:1}" = '-' ]; then
 	set -- postgres "$@"
 fi
@@ -40,6 +46,7 @@ if [ "$1" = 'postgres' ]; then
 
 	# look specifically for PG_VERSION, as it is expected in the DB dir
 	if [ ! -s "$PGDATA/PG_VERSION" ]; then
+        echo "****** Did not find PG_VERSION file, will initialize database"
 		file_env 'POSTGRES_INITDB_ARGS'
 		eval "gosu postgres initdb $POSTGRES_INITDB_ARGS"
 
