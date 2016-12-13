@@ -15,18 +15,15 @@ APPID=${2}
 if [ $# > 2 ]; then
   NEW_VIP="${3}"
   echo Updating VIP to ${NEW_VIP}
-elif 
+else
   echo Not updating VIP
 fi
 
 CURAPP=$(http --check-status $MARURL/v2/apps/$APPID)
 
-PHOST=$(http $MARURL/v2/apps/$PRIMARY_APPID | jq -r '.app.tasks[0].host')
-echo Primary VIP is $PRIMARY_HOST:$PRIMARY_PORT
-
 if [ -z ${NEW_VIP}+x ]; then 
   PAYLOAD=$(echo $CURAPP | jq ".app | .env.PGREPL_ROLE = \"PRIMARY\" | del(.env.PGREPL_MASTER_IP, .env.PGREPL_MASTER_PORT) | {env}")
-elif 
+else
   PAYLOAD=$(echo $CURAPP | jq ".app | .env.PGREPL_ROLE = \"PRIMARY\" | del(.env.PGREPL_MASTER_IP, .env.PGREPL_MASTER_PORT) | .container.docker.portMappings[0].labels.VIP_0 = \"${NEW_VIP}\" | {env, container}")
 fi
 
