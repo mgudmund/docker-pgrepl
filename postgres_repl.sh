@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
-set -o errexit
+if [ ! -z ${PGREPL_DEBUG+x} ]; then
+  set -o xtrace
+fi
 set -o nounset
 set -o pipefail
-set -o xtrace
+set -o errexit
 
 PGREPL_ROLE=${PGREPL_ROLE-(none)}
 echo "****** PGREPL_ROLE is: $PGREPL_ROLE"
@@ -13,7 +15,7 @@ PGREPL_TOKEN_HASH=$(echo $PGREPL_TOKEN | md5sum | awk '{print $1}')
 
 trigger_file="$PGDATA"/pgrepl_trigger
 recovery_file="$PGDATA"/recovery.conf
-sentinel_file="$PGDATA"/pgrepl_sentinel.conf
+sentinel_file="$PGDATA"/pgrepl_sentinel
 
 initialize_replication() {
   echo "****** Setting postgres system variables for replication"
@@ -45,11 +47,17 @@ setup_standby() {
   echo "****** Catchup with master using pg_basebackup"
   gosu postgres pg_basebackup -D "$PGDATA"/ -h "$PGREPL_MASTER_IP" -p "$PGREPL_MASTER_PORT" -U pgrepl -P 
   
+  if [ -e ${trigger_file} ]; then 
+    echo "****** Removing trigger file from pg_basebackup"
+    rm -f ${trigger_file}    
+  fi
+
   echo "****** Setting recovery configuration"
   gosu postgres echo "standby_mode='on'"                                                              >> ${recovery_file}
   gosu postgres echo "primary_conninfo='host=$PGREPL_MASTER_IP port=$PGREPL_MASTER_PORT user=pgrepl'" >> ${recovery_file}
   gosu postgres echo "recovery_target_timeline = 'latest'"                                            >> ${recovery_file}
   gosu postgres echo "trigger_file = '$trigger_file'"                                                 >> ${recovery_file}
+
 }
 
 setup_primary() {
