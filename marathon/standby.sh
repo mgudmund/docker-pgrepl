@@ -23,8 +23,7 @@ PRIMARYAPP=$(http $MARURL/v2/apps/$PRIMARY_APPID)
 PHOST=$(echo $PRIMARYAPP | jq -r '.app.tasks[0].host')
 PHOSTROLE=$(echo $PRIMARYAPP | jq -r '.app.env.PGREPL_ROLE')
 if [ "$PHOSTROLE" != "PRIMARY" ]; then
-  echo "Specified primary app id was not primary; had PGREPL_ROLE: $PHOSTROLE"
-  exit 2
+  echo "WARNING: Specified primary app id was not primary; had PGREPL_ROLE: $PHOSTROLE"
 fi
 echo Primary VIP is $PRIMARY_HOST:$PRIMARY_PORT
 
