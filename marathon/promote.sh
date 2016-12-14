@@ -3,7 +3,7 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-set -o xtrace
+#set -o xtrace
 
 if [[ $# -lt 2 ]]; then 
   echo usage: $0 [marathon-url] [standby-app-id] [standby-vip]
