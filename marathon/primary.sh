@@ -24,8 +24,8 @@ read -r -d '' PAYLOAD <<EOM || true
     "PGREPL_ROLE": "PRIMARY"
   },
   "instances": 1,
-  "cpus": 0.5,
-  "mem": 512,
+  "cpus": 1.0,
+  "mem": 1024,
   "container": {
     "type": "DOCKER",
     "volumes": [
@@ -53,17 +53,17 @@ read -r -d '' PAYLOAD <<EOM || true
       ]
     }
   },
+  "healthChecks": [
+    {
+      "protocol": "COMMAND",
+      "command": {
+        "value": "gosu postgres pg_ctl status"
+      }
+    }
+  ],
   "taskKillGracePeriodSeconds": 30
 }
 EOM
 
-#  "healthChecks": [
-#    {
-#      "protocol": "COMMAND",
-#      "command": {
-#        "value": "gosu postgres pg_ctl status"
-#      }
-#    }
-#  ]
 
 echo $PAYLOAD | http PUT $MARURL/v2/apps/$APPID?force=true
